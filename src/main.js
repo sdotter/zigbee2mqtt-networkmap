@@ -1,4 +1,5 @@
 import '@material/mwc-button'
+import './ha-slider'
 import './ha-card'
 customElements.whenDefined('zigbee2mqtt-networkmap').then(() => {
   function createHass () {
