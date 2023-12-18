@@ -229,6 +229,7 @@ customElements.whenDefined('zigbee2mqtt-networkmap').then(() => {
     node_size: 16,
     font_size: 12,
     link_width: 2,
+    show_slider: 'auto',
     height: 400,
     css: `
 :host {

@@ -64,11 +64,6 @@
       ha-slider {
         width: 100%;
       }
-      @media screen and (min-width: 870px) {
-        ha-slider {
-          display: none
-        }
-      }
       {{ css }}
     </v-style>
     <d3-network :net-nodes="nodes" :net-links="links" :options="options" :link-cb="link_cb" ref="net" />
@@ -106,7 +101,8 @@ export default {
       hass: null,
       nodes: [],
       links: [],
-      state: ''
+      state: '',
+      showSlider: null
     }
   },
   computed: {
@@ -118,11 +114,33 @@ export default {
         linkLabels: true,
         linkWidth: config.link_width || 2,
         nodeLabels: true,
-        nodeSize: config.node_size || 16
+        nodeSize: config.node_size || 16,
+        showSlider: config.show_slider || 'auto'
       }
     },
     css () {
-      return this.config.css || ''
+      let css = ''
+      if (this.config.show_slider === true) {
+        css = `
+          @media screen and (min-width: 870px) {
+            ha-slider {
+              display: block
+            }
+          }`
+      } else if (this.config.show_slider === false) {
+        css = `
+          ha-slider {
+            display: none
+          }`
+      } else {
+        css = `
+          @media screen and (min-width: 870px) {
+            ha-slider {
+              display: none
+            }
+          }`
+      }
+      return css + this.config.css || ''
     }
   },
   watch: {
