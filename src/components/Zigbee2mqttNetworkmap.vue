@@ -163,6 +163,9 @@ export default {
     config (newConfig, oldConfig) {
       if (newConfig) {
         this.$refs.net.size.h = newConfig.height || 400
+
+        // stop increasing height on window resize (possible bug in vue-d3-network?)
+        this.$refs.net.$refs.svg.$el.setAttribute('style', `max-height: ${newConfig.height || 400}`)
       }
     }
   },
