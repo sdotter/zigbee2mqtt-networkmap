@@ -27,6 +27,8 @@
       }
       .link:hover, .node:hover {
         stroke: var(--zigbee2mqtt-networkmap-hover-color, #be385d);
+      }
+      .node:hover {
         stroke-width: 5px;
       }
       .link.selected {
@@ -38,9 +40,16 @@
       .link-label, .node-label {
         fill: var(--zigbee2mqtt-networkmap-label-color, #127862);
       }
+      .node-label {
+        stroke: var(--ha-card-background, var(--card-background-color, #fff));
+        stroke-width: 0.5em;
+        paint-order: stroke;
+        stroke-opacity: 0.7;
+        stroke-linejoin: round;
+      }
       .link-label {
-        -webkit-transform: translateY(-.5em);
-        transform: translateY(-.5em);
+        dominant-baseline: text-after-edge;
+        dominant-baseline: ideographic;
         text-anchor: middle;
       }
       #m-end path {
@@ -146,7 +155,7 @@ export default {
   watch: {
     hass (newHass, oldHass) {
       const entity = this.config.entity
-      if (newHass && entity) {
+      if (newHass && entity && newHass.states[entity]) {
         const newAttr = newHass.states[entity].attributes
         let oldAttr = null
         if (oldHass) {
@@ -174,17 +183,17 @@ export default {
       link._svgAttrs = { 'marker-end': 'url(#m-end)' }
       return link
     },
-    merge (target, source, tkey, skey, map) {
+    merge (target, source, map) {
       const result = []
       const store = {}
       if (source) {
         source.forEach(e => {
-          const key = skey(e)
-          store[key] = map(e)
+          const r = map(e)
+          store[r.id] = r
         })
       }
       target.forEach((e, i) => {
-        const key = tkey(e)
+        const key = e.id
         if (key in store) {
           for (const k in store[key]) {
             e[k] = store[key][k]
@@ -236,6 +245,37 @@ export default {
         svg.setAttribute('viewBox', `${x2} ${y2} ${width2} ${height2}`)
       }
     },
+    transform (attr, config) {
+      return {
+        nodes: {
+          source: attr.nodes,
+          map: d => {
+            return {
+              id: d.ieeeAddr,
+              name: d.type === 'Coordinator' ? ' ' : d.friendlyName,
+              _cssClass: d.type ? d.type.toLowerCase() : ''
+            }
+          }
+        },
+        links: {
+          source: attr.links.filter(
+            d => {
+              const nodes = attr.nodes.map(d => d.ieeeAddr)
+              return nodes.includes(d.source.ieeeAddr) &&
+              nodes.includes(d.target.ieeeAddr)
+            }
+          ),
+          map: d => {
+            return {
+              id: d.source.ieeeAddr + d.target.ieeeAddr,
+              sid: d.source.ieeeAddr,
+              tid: d.target.ieeeAddr,
+              name: d.linkquality
+            }
+          }
+        }
+      }
+    },
     update () {
       const attr = this.hass.states[this.config.entity].attributes
       if (!attr.nodes && !this.initialized) {
@@ -243,30 +283,9 @@ export default {
         this.refresh()
         return
       }
-      this.nodes = this.merge(this.nodes, attr.nodes, d => d.id, d => d.ieeeAddr, d => {
-        return {
-          id: d.ieeeAddr,
-          name: d.type === 'Coordinator' ? ' ' : d.friendlyName,
-          _cssClass: d.type ? d.type.toLowerCase() : ''
-        }
-      })
-      const nodes = attr.nodes.map(e => e.ieeeAddr)
-      this.links = this.merge(
-        this.links,
-        attr.links.filter(
-          e => nodes.includes(e.sourceIeeeAddr) &&
-             nodes.includes(e.targetIeeeAddr)
-        ),
-        d => d.sid + d.tid,
-        d => d.sourceIeeeAddr + d.targetIeeeAddr,
-        d => {
-          return {
-            id: d.sourceIeeeAddr + d.targetIeeeAddr,
-            sid: d.sourceIeeeAddr,
-            tid: d.targetIeeeAddr,
-            name: d.lqi
-          }
-        })
+      const { nodes, links } = this.transform(attr, this.config)
+      this.nodes = this.merge(this.nodes, nodes.source, nodes.map)
+      this.links = this.merge(this.links, links.source, links.map)
     }
   },
   mounted () {

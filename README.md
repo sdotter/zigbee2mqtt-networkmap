@@ -4,7 +4,7 @@
 
 ## [Demo](https://azuwis.github.io/zigbee2mqtt-networkmap/)
 
-[![Screenshot](https://azuwis.github.io/zigbee2mqtt-networkmap/screenshot.gif)](https://azuwis.github.io/zigbee2mqtt-networkmap/)
+[![Screenshot](https://github.com/user-attachments/assets/2aef5c48-0d57-484d-84a9-5b00a1bda038)](https://azuwis.github.io/zigbee2mqtt-networkmap/)
 
 ## Home Assistant setup
 
@@ -52,7 +52,7 @@ Make sure to use the same name of the sensor defined under `configuration.yaml`,
 
 ### Frontend setup (YAML mode)
 
-Download [`zigbee2mqtt-networkmap.js`](https://github.com/azuwis/zigbee2mqtt-networkmap/releases/download/v0.8.0/zigbee2mqtt-networkmap.js) and put it into `<config-directory>/www/` directory.
+Download [`zigbee2mqtt-networkmap.js`](https://github.com/azuwis/zigbee2mqtt-networkmap/releases/download/v0.10.0/zigbee2mqtt-networkmap.js) and put it into `<config-directory>/www/` directory.
 
 Enable [Dashboard YAML mode](https://www.home-assistant.io/dashboards/dashboards/#using-yaml-for-the-default-dashboard).
 
@@ -62,7 +62,7 @@ In `configuration.yaml`:
 lovelace:
   mode: yaml
   resources:
-    - url: /local/zigbee2mqtt-networkmap.js?v=0.8.0
+    - url: /local/zigbee2mqtt-networkmap.js?v=0.10.0
       type: module
 
 ```
@@ -112,7 +112,7 @@ change version string in `configuration.yaml`:
 
 ``` yaml
 resources:
-  - url: /local/zigbee2mqtt-networkmap.js?v=0.8.0 # change `v=0.7.0` to `v=0.8.0`
+  - url: /local/zigbee2mqtt-networkmap.js?v=0.10.0 # change `v=x.x.x` to `v=0.10.0`
     type: module
 ```
 
@@ -137,6 +137,16 @@ A: This is probably a Zigbee2mqtt issue, see
 https://github.com/Koenkk/zigbee2mqtt/issues/2436 for discussion.
 
 ## Changelog
+
+#### [0.10.0] - 2025-01-11
+
+* Prevent undefined exception #78
+* Use Github actions to deploy github-pages
+
+#### [0.9.0] - 2024-02-29
+
+* Fix link label text position and node text background #53
+* Add Github actions to build and release
 
 #### [0.8.0] - 2023-05-29
 
