@@ -11,6 +11,13 @@ Vue.component('v-style', {
 const Zigbee2mqttNetworkmapWrap = wrap(Vue, Zigbee2mqttNetworkmapVue)
 
 class Zigbee2mqttNetworkmap extends Zigbee2mqttNetworkmapWrap {
+  constructor () {
+    super()
+
+    // eslint-disable-next-line
+    console.info('%c  ZIGBEE2MQTT-NETWORKMAP IS LOADED  ', 'color: #ff9800; font-weight: bold; background-color: black')
+  }
+
   get hass () {
     return this._hass
   }

@@ -88,7 +88,7 @@
         <ha-slider step="0.1" min="0.1" max="2" value="1" @input="zoomInOut"></ha-slider>
       </div>
       <div class="flex">
-        <mwc-button @click="refresh">Refresh</mwc-button>
+        <ha-button @click="refresh" appearance="plain">Refresh</ha-button>
         <div class="time">{{ state }}</div>
       </div>
     </div>
@@ -110,8 +110,7 @@ export default {
       hass: null,
       nodes: [],
       links: [],
-      state: '',
-      showSlider: null
+      state: ''
     }
   },
   computed: {
@@ -124,6 +123,7 @@ export default {
         linkWidth: config.link_width || 2,
         nodeLabels: true,
         nodeSize: config.node_size || 16,
+        height: config.height ? Number(config.height) : 400,
         showSlider: config.show_slider || 'auto'
       }
     },
@@ -171,10 +171,12 @@ export default {
     },
     config (newConfig, oldConfig) {
       if (newConfig) {
-        this.$refs.net.size.h = newConfig.height || 400
-
-        // stop increasing height on window resize (possible bug in vue-d3-network?)
-        this.$refs.net.$refs.svg.$el.setAttribute('style', `max-height: ${newConfig.height || 400}`)
+        this.$nextTick(() => {
+          this.$refs.net.size.h = newConfig.height || 400
+          // stop increasing height on window resize (possible bug in vue-d3-network?)
+          this.$refs.net.$refs.svg.$el.setAttribute('style', `max-height: ${newConfig.height || '400px'}`)
+          this.$refs.net.onResize()
+        })
       }
     }
   },
@@ -290,15 +292,23 @@ export default {
   },
   mounted () {
     const me = this
-    setTimeout(() => {
+    const handleResize = () => {
       this.$refs.net.onResize()
 
-      const svgEl = this.$refs.net.$refs.svg.$el
+      new ResizeObserver(() => {
+        this.$refs.net.onResize()
+      }).observe(this.$el)
 
-      svgEl.onwheel = function (event) {
+      this.$refs.net.size.h = this.options.height || 400
+
+      // stop increasing height on window resize (possible bug in vue-d3-network?)
+      this.$refs.net.$refs.svg.$el.setAttribute('style', `max-height: ${this.options.height || '400px'}`)
+      this.$refs.net.$refs.svg.$el.onwheel = function (event) {
         me.zoomInOut(event)
       }
-    }, 100)
+    }
+
+    requestAnimationFrame(handleResize)
   }
 }
 </script>
