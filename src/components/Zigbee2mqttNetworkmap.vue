@@ -72,6 +72,7 @@
       }
       ha-slider {
         width: 100%;
+        margin: 10px 0px 0px 0px;
       }
       {{ css }}
     </v-style>
@@ -85,7 +86,7 @@
     </svg>
     <div class="card-actions">
       <div class="flex">
-        <ha-slider step="0.1" min="0.1" max="2" value="1" @input="zoomInOut"></ha-slider>
+        <ha-slider ref="slider" @input="zoomInOut"></ha-slider>
       </div>
       <div class="flex">
         <ha-button @click="refresh" appearance="plain">Refresh</ha-button>
@@ -292,6 +293,17 @@ export default {
   },
   mounted () {
     const me = this
+
+    // Set ha-slider properties for web component compatibility
+    this.$nextTick(() => {
+      const slider = this.$refs.slider
+      if (slider) {
+        slider.step = 0.01
+        slider.min = 0.01
+        slider.max = 2
+        slider.value = 1.0
+      }
+    })
     const handleResize = () => {
       this.$refs.net.onResize()
 

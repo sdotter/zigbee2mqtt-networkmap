@@ -1,16 +1,106 @@
-import { css } from 'lit-element'
-import { MdSlider } from '@material/web/slider/slider'
+import Slider from '@home-assistant/webawesome/dist/components/slider/slider'
+import { CSSResult, unsafeCSS, css } from 'lit'
 
-class HaSlider extends MdSlider {
+class HaSlider extends Slider {
+  static get properties () {
+    return {
+      size: { type: String, reflect: true }, // "small" or "medium"
+      withTooltip: { type: Boolean, attribute: 'with-tooltip' }
+    }
+  }
+
+  constructor () {
+    super()
+    this.size = 'small'
+    this.withTooltip = false
+  }
+
+  connectedCallback () {
+    super.connectedCallback()
+  }
+
   static get styles () {
     return [
-      ...MdSlider.styles,
+      ...(Slider.styles || [])
+        .filter((s) => s && (s instanceof CSSResult || typeof s.cssText === 'string'))
+        .map((s) => (s instanceof CSSResult ? s : unsafeCSS(s.cssText))),
       css`
         :host {
-          --md-sys-color-primary: var(--primary-color);
-          --md-sys-color-outline: var(--outline-color);
-          --md-slider-handle-width: 14px;
-          --md-slider-handle-height: 14px;
+          --track-size: var(--ha-slider-track-size, 4px);
+          --marker-height: calc(var(--ha-slider-track-size, 4px) / 2);
+          --marker-width: calc(var(--ha-slider-track-size, 4px) / 2);
+          --wa-color-surface-default: var(--card-background-color);
+          --wa-color-neutral-fill-normal: var(--disabled-color);
+          --wa-tooltip-background-color: var(--secondary-background-color);
+          --wa-tooltip-color: var(--primary-text-color);
+          --wa-tooltip-font-family: var(
+            --ha-tooltip-font-family,
+            var(--ha-font-family-body)
+          );
+          --wa-tooltip-font-size: var(
+            --ha-tooltip-font-size,
+            var(--ha-font-size-s)
+          );
+          --wa-tooltip-font-weight: var(
+            --ha-tooltip-font-weight,
+            var(--ha-font-weight-normal)
+          );
+          --wa-tooltip-line-height: var(
+            --ha-tooltip-line-height,
+            var(--ha-line-height-condensed)
+          );
+          --wa-tooltip-padding: 8px;
+          --wa-tooltip-border-radius: var(
+            --ha-tooltip-border-radius,
+            var(--ha-border-radius-sm)
+          );
+          --wa-tooltip-arrow-size: var(--ha-tooltip-arrow-size, 8px);
+          --wa-z-index-tooltip: var(--ha-tooltip-z-index, 1000);
+          min-width: 100px;
+          min-inline-size: 100px;
+          width: 200px;
+        }
+
+        #thumb {
+          border: none;
+          background-color: var(--ha-slider-thumb-color, var(--primary-color));
+        }
+
+        #thumb:after {
+          content: "";
+          border-radius: 50%;
+          position: absolute;
+          width: calc(var(--thumb-width) * 2 + 8px);
+          height: calc(var(--thumb-height) * 2 + 8px);
+          left: calc(-50% - 4px);
+          top: calc(-50% - 4px);
+          cursor: pointer;
+        }
+
+        #slider:focus-visible:not(.disabled) #thumb,
+        #slider:focus-visible:not(.disabled) #thumb-min,
+        #slider:focus-visible:not(.disabled) #thumb-max {
+          outline: var(--wa-focus-ring);
+        }
+
+        #indicator {
+          background-color: var(
+            --ha-slider-indicator-color,
+            var(--primary-color)
+          );
+        }
+
+        :host([size="medium"]) {
+          --thumb-width: 20px;
+          --thumb-height: 20px;
+        }
+
+        :host([size="small"]) {
+          --thumb-width: 16px;
+          --thumb-height: 16px;
+        }
+
+        :host {
           min-width: 100px;
           min-inline-size: 100px;
           width: 100%;

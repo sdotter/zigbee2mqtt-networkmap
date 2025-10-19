@@ -1,10 +1,12 @@
-import Button from '@awesome.me/webawesome/dist/components/button/button'
-import { css } from 'lit'
+import Button from '@home-assistant/webawesome/dist/components/button/button'
+import { css, CSSResult, unsafeCSS } from 'lit'
 
 class HaButton extends Button {
   static get styles () {
     return [
-      Button.styles,
+      ...(Button.styles || [])
+        .filter(s => s && (s instanceof CSSResult || typeof s.cssText === 'string'))
+        .map(s => s instanceof CSSResult ? s : unsafeCSS(s.cssText)),
       css`
         .button {
           /* set theme vars */

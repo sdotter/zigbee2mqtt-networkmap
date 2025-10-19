@@ -1,4 +1,3 @@
-import '@material/mwc-button'
 import './ha-slider'
 import './ha-card'
 import './ha-button'
@@ -354,7 +353,7 @@ customElements.whenDefined('zigbee2mqtt-networkmap').then(() => {
     font_size: 12,
     link_width: 2,
     show_slider: 'auto',
-    height: 385,
+    height: 400,
     css: `
       :host {
         --zigbee2mqtt-networkmap-node-color: rgba(18, 120, 98, .7);
@@ -367,6 +366,9 @@ customElements.whenDefined('zigbee2mqtt-networkmap').then(() => {
         --zigbee2mqtt-networkmap-arrow-color: rgba(18, 120, 98, 0.7);
         --zigbee2mqtt-networkmap-node-coordinator-color: rgba(224, 78, 93, .7);
         --zigbee2mqtt-networkmap-node-router-color: rgba(0, 165, 255, .7);
+        --ha-slider-thumb-color: rgba(0, 165, 255, .7);
+        --ha-slider-indicator-color: rgba(0, 165, 255, .45);
+        --primary-color: rgba(0, 165, 255, .7);
       }
     `
   })
